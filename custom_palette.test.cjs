@@ -50,7 +50,20 @@ const copy = () => get('#copy-custom').dataset.hex;
 
 assert.equal(get('#copy-custom').disabled,true,'空方案不能复制');
 assert.equal(get('#custom-preview-cta').disabled,true,'空自定义方案不能应用');
-assert.ok(get('#application-visual').innerHTML.includes('柱状图'),'应用预览默认展示图表');
+assert.ok(get('#application-visual').innerHTML.includes('热图'),'应用预览默认展示热图');
+assert.ok(!get('#application-visual').innerHTML.includes('柱状图'),'图表中应移除条形图');
+assert.ok(get('#application-visual').innerHTML.indexOf('品类占比') < get('#application-visual').innerHTML.indexOf('热图'),'品类占比应位于热图上方');
+const countControl = action('heatmapCount','');
+countControl.value = '3';
+get('#application-visual').fire('change',countControl);
+assert.ok(get('#application-visual').innerHTML.includes('中间颜色'),'三色模式应显示中间颜色控件');
+const slotControl = action('heatmapSlot',0);
+slotControl.value = '4';
+get('#application-visual').fire('change',slotControl);
+assert.ok(get('#application-visual').innerHTML.includes('value="4" aria-pressed="true"'),'应能选用方案中指定的颜色');
+countControl.value = '2';
+get('#application-visual').fire('change',countControl);
+assert.ok(!get('#application-visual').innerHTML.includes('中间颜色'),'两色模式应移除中间颜色控件');
 click('#generated-schemes',action('previewScheme',2));
 assert.ok(get('#application-source').textContent.includes('互补点睛'),'探索色彩应切换到对应方案');
 assert.equal(previewButtons[2].attributes['aria-pressed'],'true','正在预览的方案应标记为选中');
@@ -141,7 +154,27 @@ assert.ok(get('#application-visual').innerHTML.includes('application-empty'),'�
 assert.equal(get('#custom-preview-cta').disabled,true,'清空后应禁用自定义应用按钮');
 click('#generated-schemes',action('previewScheme',0));
 assert.ok(!get('#application-visual').innerHTML.includes('application-empty'),'自动方案应能重新应用');
-const {applicationMarkup,describeColor}=new Function(source+';return {applicationMarkup,describeColor};')();
+const {applicationMarkup,describeColor,sampleCmap}=new Function(source+';return {applicationMarkup,describeColor,sampleCmap};')();
+const {defaultHeatmapIndices,distance}=new Function(source+';return {defaultHeatmapIndices,distance};')();
+const testPalette = ['#000000','#111111','#888888','#eeeeee','#ffffff'].map(hex=>describeColor({hex,name:'测试色'}));
+assert.deepEqual(defaultHeatmapIndices(testPalette,2),[0,4],'默认两色应为全局距离最远的黑白两色');
+assert.deepEqual(defaultHeatmapIndices(testPalette,3),[0,2,4],'默认三色应避免选入与端点过近的颜色');
+for (const count of [2,3]) {
+  const palette = colors.slice(0,10).map(describeColor);
+  const chosen = defaultHeatmapIndices(palette,count);
+  const minimum = indices=>Math.min(...indices.flatMap((a,i)=>indices.slice(i+1).map(b=>distance(palette[a],palette[b]))));
+  for(let i=0;i<palette.length;i++) for(let j=i+1;j<palette.length;j++) {
+    if(count === 2) assert.ok(minimum(chosen)>=minimum([i,j]),'两色默认值必须达到最大色差');
+    else for(let k=j+1;k<palette.length;k++) assert.ok(minimum(chosen)>=minimum([i,j,k]),'三色默认值必须最大化最小两两色差');
+  }
+}
+assert.deepEqual(defaultHeatmapIndices([],3),[],'空方案应返回空选择');
+assert.equal(defaultHeatmapIndices(testPalette.slice(0,2),3).length,2,'不足三色时应使用现有两色');
+assert.equal(sampleCmap(['#000000','#ffffff'],0),'#000000','渐变起点应等于低值颜色');
+assert.equal(sampleCmap(['#000000','#ffffff'],1),'#ffffff','渐变终点应等于高值颜色');
+assert.equal(sampleCmap(['#000000','#ffffff'],0.5),'#808080','两色渐变应按通道插值');
+assert.equal(sampleCmap(['#000000','#ff0000','#ffffff'],0.5),'#ff0000','三色渐变中点应等于中间颜色');
+assert.equal(sampleCmap(['#000000','#ff0000','#ffffff'],0.75),'#ff8080','三色渐变后半段应独立插值');
 for(let count=1;count<=10;count++) {
   const palette=colors.slice(0,count).map(describeColor);
   const chart=applicationMarkup(palette,'chart',s=>s);

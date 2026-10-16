@@ -51,7 +51,29 @@ header{padding:42px 0 34px;display:flex;align-items:end;justify-content:space-be
 #custom-scheme{overflow:visible;position:relative}.custom-results{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;margin:0;padding:8px;max-height:220px;background:white;border:1px solid var(--line);border-radius:5px;box-shadow:0 6px 20px #0002}.custom-results:empty,.custom-results[hidden]{display:none}.custom-results p{margin:0}
 .scheme-note:empty{padding:0}
 button.preview-cta{border:0;cursor:pointer;font-family:inherit;line-height:18px}button.preview-cta:disabled{opacity:.45;cursor:default}button.preview-cta:focus-visible{outline:2px solid #526954;outline-offset:3px}button.preview-cta[aria-pressed="true"]{box-shadow:0 0 0 2px white,0 0 0 3px #526954}
-.application-content{grid-row:2 / span 4;padding:16px;align-self:start}.application-tabs{display:flex;gap:8px;margin-bottom:14px}.application-tabs button{flex:1;border:1px solid var(--line);border-radius:4px;background:white;padding:9px;color:var(--ink);font:inherit;font-size:13px;cursor:pointer}.application-tabs button[aria-pressed="true"]{background:#29382e;color:white}.application-tabs button:focus-visible{outline:2px solid #526954;outline-offset:3px}.application-source{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 16px}.application-hint{color:var(--muted);font-size:12px;line-height:1.8;margin:0 0 14px}.application-visual h4{font-size:14px;font-weight:500;margin:0 0 10px}.application-visual svg{display:block;width:100%;height:auto}.application-chart{padding:14px 0;border-top:1px solid var(--line)}.application-donut{max-width:170px;margin:0 auto}.application-legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:14px;font-size:11px;color:var(--muted)}.application-legend span{display:inline-flex;gap:5px;align-items:center}.application-legend i{display:inline-block;width:12px;height:12px;border:1px solid #0002;border-radius:2px}.application-art{margin:0}.application-art svg{border-radius:4px}.application-art figcaption{margin:12px 0;font-family:serif;font-size:18px}.application-empty{color:var(--muted);padding:30px 0;font-size:13px;line-height:1.8}
+.application-content{grid-row:3 / span 3;padding:16px;align-self:start}.application-tabs{display:flex;gap:8px;margin-bottom:14px}.application-tabs button{flex:1;border:1px solid var(--line);border-radius:4px;background:white;padding:9px;color:var(--ink);font:inherit;font-size:13px;cursor:pointer}.application-tabs button[aria-pressed="true"]{background:#29382e;color:white}.application-tabs button:focus-visible{outline:2px solid #526954;outline-offset:3px}.application-source{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 16px}.application-hint{color:var(--muted);font-size:12px;line-height:1.8;margin:0 0 14px}.application-visual h4{font-size:14px;font-weight:500;margin:0 0 10px}.application-visual svg{display:block;width:100%;height:auto}.application-chart{padding:14px 0;border-top:1px solid var(--line)}.application-donut{max-width:170px;margin:0 auto}.application-legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:14px;font-size:11px;color:var(--muted)}.application-legend span{display:inline-flex;gap:5px;align-items:center}.application-legend i{display:inline-block;width:12px;height:12px;border:1px solid #0002;border-radius:2px}.application-art{margin:0}.application-art svg{border-radius:4px}.application-art figcaption{margin:12px 0;font-family:serif;font-size:18px}.application-empty{color:var(--muted);padding:30px 0;font-size:13px;line-height:1.8}
+.heatmap-controls{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;margin-bottom:12px}.heatmap-controls label{font-size:12px;color:var(--muted);min-width:0}.heatmap-controls select{display:block;width:100%;margin-top:6px;padding:7px 4px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--ink);font:inherit}.heatmap-controls select:focus-visible{outline:2px solid #526954;outline-offset:2px}
+.heatmap-color-field{font-size:12px;color:var(--muted);min-width:0}.heatmap-color-picker{position:relative;margin-top:6px}.heatmap-color-picker summary{display:flex;align-items:center;gap:5px;list-style:none;border:1px solid var(--line);border-radius:4px;padding:7px 5px;background:white;color:var(--ink);cursor:pointer}.heatmap-color-picker summary::-webkit-details-marker{display:none}.heatmap-color-picker summary::after{content:'▾';margin-left:auto}.heatmap-color-picker summary span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.heatmap-color-picker i{display:inline-block;width:12px;height:12px;flex-shrink:0;border:1px solid #0003;border-radius:2px}.heatmap-color-picker[open]{z-index:40}.heatmap-color-options{position:absolute;top:calc(100% + 4px);right:0;min-width:125px;max-height:240px;overflow:auto;padding:4px;background:white;border:1px solid var(--line);border-radius:4px;box-shadow:0 4px 16px #0002}.heatmap-color-options button{display:flex;align-items:center;gap:8px;width:100%;border:0;border-radius:3px;padding:8px;background:white;color:var(--ink);font:inherit;text-align:left;cursor:pointer}.heatmap-color-options button:hover,.heatmap-color-options button[aria-pressed="true"]{background:#eef1eb}.heatmap-color-options button:disabled{opacity:.4;cursor:default}.heatmap-color-picker summary:focus-visible,.heatmap-color-options button:focus-visible{outline:2px solid #526954;outline-offset:-2px}#application-card{overflow:visible}
+.application-donut-layout{display:grid;grid-template-columns:minmax(0,140px) 110px;justify-content:center;align-items:center;gap:12px;padding-left:12px}.application-donut-layout .application-donut{min-width:0;margin:0}.application-donut-layout .application-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px;margin:0}.application-donut-layout .application-legend span{white-space:nowrap;grid-column:1}.application-donut-layout .application-legend.is-two-columns{grid-template-rows:repeat(5,auto);grid-auto-flow:column}.application-donut-layout .application-legend.is-two-columns span{grid-column:auto}
+.application-art{padding-top:14px}
+.application-visual>.application-chart:first-child{border-top:0;padding-bottom:0}
+.application-visual>.application-chart:last-child{padding-bottom:0}
+.application-controls{grid-row:2;padding:24px;min-height:200px;display:flex;flex-direction:column;justify-content:center}.application-controls .application-source,.application-controls .application-hint{color:inherit}.application-controls .application-hint{margin-bottom:0}.application-controls .application-tabs button[aria-pressed="true"]{background:var(--application-primary,#29382e);color:var(--application-primary-ink,white)}
+/* 多列时由配色卡决定行高，作品仅使用分配到的空间，喵~ */
+@media(min-width:1051px){
+  #application-card .application-controls{contain:size;min-height:0}
+  #application-card .application-content{contain:size;min-height:0;align-self:stretch;display:flex;flex-direction:column;overflow:auto}
+  #application-card .application-content> :not(.application-visual){flex-shrink:0}
+  #application-card .application-visual{flex:1;min-height:0;display:flex;flex-direction:column}
+  #application-card .application-chart,#application-card .application-legend{flex-shrink:0}
+  #application-card .application-chart:last-child{flex:1;display:flex;flex-direction:column;min-height:240px}
+  #application-card .application-chart:last-child> :not(svg){flex-shrink:0}
+  #application-card .application-chart:last-child>svg{flex:1;min-height:100px;height:0;width:100%}
+  #application-card .application-donut{width:100%;max-width:140px}
+  #application-card .application-art{flex:1;min-height:180px;display:flex;flex-direction:column}
+  #application-card .application-art svg{flex:1;min-height:120px;height:0;object-fit:contain}
+  #application-card .application-art figcaption{flex-shrink:0}
+}
 </style>
 </head>
 <body>
@@ -64,7 +86,7 @@ button.preview-cta{border:0;cursor:pointer;font-family:inherit;line-height:18px}
 <div id="generated-schemes"></div>
 <article class="scheme" id="custom-scheme" aria-labelledby="custom-title"><div class="scheme-title"><h3 id="custom-title">自定义配色</h3><button type="button" class="copy-palette" id="copy-custom" disabled>复制整组</button></div>
 <div class="preview" id="custom-preview" style="background:#f7f5f0;color:#292d29"><span class="preview-badge" id="custom-preview-badge">我的星河</span><h4>把喜欢的颜色，组成一段奇缘。</h4><p id="custom-preview-count">共 0 色 · 按添加顺序展示</p><div class="custom-search-row"><button type="button" class="preview-cta" id="custom-preview-cta" aria-pressed="false" aria-controls="application-card" disabled>探索色彩 →</button><input id="custom-search" type="search" placeholder="搜索名称、拼音或 HEX" aria-label="搜索并添加颜色" autocomplete="off" aria-controls="custom-results" aria-expanded="false"><button type="button" id="clear-custom" disabled>清空</button><div class="custom-results" id="custom-results" hidden></div></div><p class="custom-help" id="custom-status" role="status">尚未添加颜色。</p></div><div id="custom-content"></div></article>
-<article class="scheme" id="application-card" aria-labelledby="application-title"><div class="scheme-title"><h3 id="application-title">应用预览</h3></div><div class="application-content"><div class="application-tabs" role="group" aria-label="应用预览类型"><button type="button" id="application-chart-tab" aria-pressed="true" aria-controls="application-visual">数据图表</button><button type="button" id="application-art-tab" aria-pressed="false" aria-controls="application-visual">绘画艺术</button></div><p class="application-source" id="application-source" role="status"></p><p class="application-hint">点击任一配色卡的“探索色彩”，看看它在作品中的样子。</p><div class="application-visual" id="application-visual"></div></div></article>
+<article class="scheme" id="application-card" aria-labelledby="application-title"><div class="scheme-title"><h3 id="application-title">应用预览</h3></div><div class="application-controls" id="application-controls"><div class="application-tabs" role="group" aria-label="应用预览类型"><button type="button" id="application-chart-tab" aria-pressed="true" aria-controls="application-visual">数据图表</button><button type="button" id="application-art-tab" aria-pressed="false" aria-controls="application-visual">绘画艺术</button></div><p class="application-source" id="application-source" role="status"></p><p class="application-hint">点击任一配色卡的“探索色彩”，看看它在作品中的样子。</p></div><div class="application-content"><div class="application-visual" id="application-visual"></div></div></article>
 </div>
 </section>
 <div class="toolbar"><div class="searchbox"><label for="search">查找颜色</label><input id="search" type="search" placeholder="输入中文名、拼音或 HEX" autocomplete="off"></div><span class="count" id="count" role="status">共 526 种颜色</span></div>
@@ -2978,7 +3000,58 @@ function renderWheel(palette, roles, escapeText) {
   return `<figure class="color-wheel"><figcaption>色盘位置 <span>编号对应上方色卡</span></figcaption><div class="wheel-plot"><svg viewBox="0 0 240 240" role="img" aria-label="仅展示方案颜色的色相与彩度位置，背景透明，实心点为实际位置，连线通向外围编号"><circle cx="120" cy="120" r="80" fill="none" stroke="#b8bdb5"/><circle cx="120" cy="120" r="40" fill="none" stroke="#cdd1c9" stroke-dasharray="2 3"/><path d="M 40 120 H 200 M 120 40 V 200" fill="none" stroke="#d9ddd5" stroke-width=".6"/>${lines}${dots}</svg>${labels}</div></figure>`;
 }
 
-function applicationMarkup(palette, mode, escapeText) {
+// 使用感知色差选择热图默认配色。
+function defaultHeatmapIndices(palette, count = 3) {
+  const colors = palette.map(describeColor);
+  const size = Math.min(count, colors.length);
+  let best = [], bestMin = -1, bestSum = -1;
+  // 穷举组合，优先最大化最小两两色差，再以总色差打破平局。
+  function visit(indices, start) {
+    if (indices.length === size) {
+      const distances = indices.flatMap((a,i)=>indices.slice(i+1).map(b=>distance(colors[a],colors[b])));
+      const minimum = distances.length ? Math.min(...distances) : 0;
+      const sum = distances.reduce((a,b)=>a+b,0);
+      if (minimum > bestMin || (minimum === bestMin && sum > bestSum)) {
+        best = indices.slice(); bestMin = minimum; bestSum = sum;
+      }
+      return;
+    }
+    for (let i = start; i <= colors.length-(size-indices.length); i++) visit([...indices,i],i+1);
+  }
+  visit([],0);
+  return best.sort((a,b)=>colors[a].L-colors[b].L || a-b);
+}
+
+// 按等距颜色节点进行 RGB 分段线性插值，喵~
+function sampleCmap(colors, value) {
+  const position = Math.max(0, Math.min(1, value)) * (colors.length-1);
+  const index = Math.min(Math.floor(position), colors.length-2);
+  const fraction = position-index;
+  return '#' + [1,3,5].map(offset => {
+    const low = parseInt(colors[index].slice(offset,offset+2),16);
+    const high = parseInt(colors[index+1].slice(offset,offset+2),16);
+    return Math.round(low+(high-low)*fraction).toString(16).padStart(2,'0');
+  }).join('');
+}
+
+function heatmapMarkup(palette, indices, escapeText, categories) {
+  if (palette.length < 2) return '<div class="application-chart"><h4>热图</h4><p class="application-empty">请向当前方案添加至少 2 种颜色，以生成渐变热图。</p></div>';
+  const colors = indices.map(i=>palette[i].hex);
+  const labels = indices.length === 3 ? ['低值颜色','中间颜色','高值颜色'] : ['低值颜色','高值颜色'];
+  const controls = indices.map((selected,slot)=>`<div class="heatmap-color-field"><span>${labels[slot]}</span><details class="heatmap-color-picker" data-heatmap-picker="${slot}"><summary aria-label="${labels[slot]}：${escapeText(palette[selected].name)}"><i aria-hidden="true" style="background:${palette[selected].hex}"></i><span>${escapeText(palette[selected].name)}</span></summary><div class="heatmap-color-options" role="group" aria-label="${labels[slot]}">${palette.map((c,i)=>`<button type="button" data-heatmap-slot="${slot}" value="${i}" aria-pressed="${i === selected}"${indices.includes(i) && i !== selected ? ' disabled' : ''}><i aria-hidden="true" style="background:${c.hex}"></i><span>${escapeText(c.name)}</span></button>`).join('')}</div></details></div>`).join('');
+  // 固定示例数据，让切换方案时可以直接比较配色效果。
+  const values = [[12,28,45,68,82,100],[5,18,39,56,73,91],[22,42,61,79,96,65],[35,58,84,100,71,48],[0,16,33,52,69,87],[48,36,62,75,89,94],[65,72,58,83,91,100],[18,45,78,92,64,38],[32,51,46,69,85,97],[25,40,59,74,88,95]].slice(0,categories.length);
+  const rows = categories;
+  // 固定绘图区高度，按品类数量均分每行空间。
+  const plotHeight = 150;
+  const rowHeight = plotHeight / rows.length;
+
+  const cells = values.map((row,y)=>`<text data-heatmap-row-label="${y}" x="20" y="${36+(y+0.5)*rowHeight}" dominant-baseline="middle" text-anchor="middle" fill="#62685f" font-size="11">${rows[y]}</text>`+row.map((value,x)=>`<rect data-heatmap-row="${y}" x="${38+x*37}" y="${36+y*rowHeight}" width="37" height="${rowHeight}" fill="${sampleCmap(colors,value/100)}" stroke="#fff" stroke-width="1"><title>${rows[y]} · ${x+1}月：${value}</title></rect>`).join('')).join('');
+  const stops = colors.map((color,i)=>`<stop offset="${100*i/(colors.length-1)}%" stop-color="${color}"/>`).join('');
+  return `<div class="application-chart"><h4>品类月度表现热图 · 示例数据</h4><div class="heatmap-controls"><label>色数<select data-heatmap-count aria-label="渐变颜色数量"><option value="2"${indices.length === 2 ? ' selected' : ''}>2 色</option><option value="3"${indices.length === 3 ? ' selected' : ''}${palette.length < 3 ? ' disabled' : ''}>3 色</option></select></label>${controls}</div><svg data-heatmap-rows="${rows.length}" viewBox="0 0 320 ${plotHeight+36}" role="img" aria-label="${rows.length}个品类在六个月的表现热图，数值范围为 0 到 100"><defs><linearGradient id="heatmap-gradient" x1="0" y1="1" x2="0" y2="0" color-interpolation="sRGB">${stops}</linearGradient></defs>${values[0].map((_,i)=>`<text x="${56.5+i*37}" y="22" text-anchor="middle" fill="#62685f" font-size="11">${i+1}月</text>`).join('')}${cells}<rect x="273" y="36" width="12" height="${plotHeight}" fill="url(#heatmap-gradient)"/><g fill="#62685f" font-size="11" dominant-baseline="middle"><text x="290" y="${36+plotHeight}" dominant-baseline="auto">0</text><text x="290" y="${36+plotHeight/2}">50</text><text x="290" y="36">100</text></g></svg></div>`;
+}
+
+function applicationMarkup(palette, mode, escapeText, heatmapIndices = defaultHeatmapIndices(palette)) {
   if (!palette.length) return '<p class="application-empty">先在自定义配色中添加颜色，再来看看效果。</p>';
   const swatches = palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${i+1} · ${escapeText(c.name)}</span>`).join('');
   if (mode === 'art') {
@@ -2991,8 +3064,6 @@ function applicationMarkup(palette, mode, escapeText) {
   }
   const values = [72,55,86,40,68,49,92,61,35,78].slice(0,palette.length);
   const categories = ['书籍','文具','家居','服饰','食品','运动','数码','园艺','玩具','手作'].slice(0,palette.length);
-  const height = 30 + palette.length*28;
-  const bars = palette.map((c,i)=>`<text x="0" y="${25+i*28}" fill="#62685f" font-size="11">${categories[i]}</text><rect x="40" y="${14+i*28}" width="${values[i]*2.5}" height="16" rx="2" fill="${c.hex}" stroke="#000" stroke-opacity=".15" stroke-width=".5"><title>${categories[i]}：${values[i]} · ${escapeText(c.name)}</title></rect><text x="${47+values[i]*2.5}" y="${26+i*28}" fill="#292d29" font-size="11">${values[i]}</text>`).join('');
   const total = values.reduce((a,b)=>a+b,0);
   const circumference = 2*Math.PI*59;
   let offset = 0;
@@ -3002,7 +3073,7 @@ function applicationMarkup(palette, mode, escapeText) {
     offset += length;
     return segment;
   }).join('');
-  return `<div class="application-chart"><h4>品类表现 · 示例数据</h4><svg viewBox="0 0 320 ${height}" role="img" aria-label="各品类示例数据柱状图">${bars}</svg></div><div class="application-chart"><h4>品类占比</h4><div class="application-donut"><svg viewBox="0 0 180 180" role="img" aria-label="各品类示例数据占比环形图">${segments}<text x="90" y="88" text-anchor="middle" fill="#292d29" font-size="22">${total}</text><text x="90" y="108" text-anchor="middle" fill="#73776f" font-size="11">合计</text></svg></div></div><div class="application-legend">${palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${categories[i]}</span>`).join('')}</div>`;
+  return `<div class="application-chart"><h4>品类占比 · 示例数据</h4><div class="application-donut-layout"><div class="application-donut"><svg viewBox="0 0 180 180" role="img" aria-label="各品类示例数据占比环形图">${segments}<text x="90" y="88" text-anchor="middle" fill="#292d29" font-size="22">${total}</text><text x="90" y="108" text-anchor="middle" fill="#73776f" font-size="11">合计</text></svg></div><div class="application-legend${palette.length > 5 ? ' is-two-columns' : ''}">${palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${categories[i]}</span>`).join('')}</div></div></div>${heatmapMarkup(palette,heatmapIndices,escapeText,categories)}`;
 }
 
 function addCustomColor(colors, color) {
@@ -3020,6 +3091,28 @@ if (typeof document !== 'undefined') {
   let customColors = [];
   let applicationMode = 'chart';
   let applicationSource = 0;
+  let heatmapIndices = [0,1];
+  let heatmapCount = 3;
+  let heatmapPaletteKey = '';
+  // 按实际可用高度重排纵坐标，保持横向尺寸和文字比例不变。
+  const heatmapResizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(entries=>{
+    for (const {target:svg,contentRect} of entries) {
+      if (!contentRect.width || !contentRect.height) continue;
+      const height = 320*contentRect.height/contentRect.width;
+      const plotHeight = Math.max(1,height-36);
+      const rowHeight = plotHeight/Number(svg.dataset.heatmapRows);
+      svg.setAttribute('viewBox',`0 0 320 ${height}`);
+      svg.querySelectorAll('[data-heatmap-row]').forEach(cell=>{
+        cell.setAttribute('y',36+Number(cell.dataset.heatmapRow)*rowHeight);
+        cell.setAttribute('height',rowHeight);
+      });
+      svg.querySelectorAll('[data-heatmap-row-label]').forEach(label=>{
+        label.setAttribute('y',36+(Number(label.dataset.heatmapRowLabel)+0.5)*rowHeight);
+      });
+      svg.querySelector('rect[fill="url(#heatmap-gradient)"]').setAttribute('height',plotHeight);
+      svg.querySelectorAll('g text').forEach((label,i)=>label.setAttribute('y',36+plotHeight*(1-i/2)));
+    }
+  });
   let generatedPalettes = [];
   const customMenu = document.querySelector('#custom-context-menu');
   const removeCustomButton = document.querySelector('#remove-custom-color');
@@ -3268,14 +3361,64 @@ if (typeof document !== 'undefined') {
   function renderApplication() {
     const custom = applicationSource === 'custom';
     const palette = custom ? customColors : (generatedPalettes[applicationSource] || []);
+    const paletteKey = JSON.stringify([applicationSource,palette.map(c=>c.hex)]);
+    if (paletteKey !== heatmapPaletteKey) {
+      heatmapIndices = defaultHeatmapIndices(palette,heatmapCount);
+      heatmapPaletteKey = paletteKey;
+    }
     const name = custom ? '自定义配色' : visibleStyles[applicationSource].name;
+    const primary = palette[0] || describeColor({hex:'#29382e'});
+    const surface = palette.length ? previewSurface(primary,catalog,custom ? 0 : variant) : {background:{hex:'#f7f5f0'},foreground:{hex:'#292d29'}};
+    const usePaletteSurface = !custom && !visibleStyles[applicationSource].algorithm;
+    const controls = document.querySelector('#application-controls');
+    controls.style.background = (usePaletteSurface && palette[3] || surface.background).hex;
+    controls.style.color = (usePaletteSurface && palette[4] || surface.foreground).hex;
+    controls.style.setProperty('--application-primary',primary.hex);
+    controls.style.setProperty('--application-primary-ink',inkFor(primary));
     document.querySelector('#application-source').textContent = `当前配色：${name} · ${palette.length} 色`;
-    document.querySelector('#application-visual').innerHTML = applicationMarkup(palette,applicationMode,escapeText);
+    heatmapResizeObserver?.disconnect();
+    document.querySelector('#application-visual').innerHTML = applicationMarkup(palette,applicationMode,escapeText,heatmapIndices);
+    const heatmap = document.querySelector('#application-visual').querySelector('[data-heatmap-rows]');
+    if (heatmap) heatmapResizeObserver?.observe(heatmap);
     document.querySelector('#application-chart-tab').setAttribute('aria-pressed',String(applicationMode === 'chart'));
     document.querySelector('#application-art-tab').setAttribute('aria-pressed',String(applicationMode === 'art'));
     document.querySelector('#custom-preview-cta').setAttribute('aria-pressed',String(custom));
     document.querySelectorAll('[data-preview-scheme]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.previewScheme) === applicationSource)));
   }
+  function changeHeatmapColor(event) {
+    const target = event.target;
+    if ('heatmapCount' in target.dataset) {
+      const count = Number(target.value);
+      const palette = applicationSource === 'custom' ? customColors : generatedPalettes[applicationSource];
+      if (![2,3].includes(count) || palette.length < count) return;
+      heatmapCount = count;
+      heatmapIndices = defaultHeatmapIndices(palette,count);
+    } else if ('heatmapSlot' in target.dataset) {
+      const slot = Number(target.dataset.heatmapSlot);
+      const index = Number(target.value);
+      const palette = applicationSource === 'custom' ? customColors : generatedPalettes[applicationSource];
+      if (!Number.isInteger(slot) || slot < 0 || slot >= heatmapIndices.length || !Number.isInteger(index) || index < 0 || index >= palette.length || (heatmapIndices.includes(index) && heatmapIndices[slot] !== index)) return;
+      heatmapIndices[slot] = index;
+    } else return;
+    renderApplication();
+    const selector = 'heatmapCount' in target.dataset ? '[data-heatmap-count]' : `[data-heatmap-picker="${target.dataset.heatmapSlot}"] summary`;
+    document.querySelector('#application-visual').querySelector(selector)?.focus();
+  }
+  document.querySelector('#application-visual').addEventListener('change',changeHeatmapColor);
+  document.querySelector('#application-visual').addEventListener('click',event=>{
+    const button = event.target.closest('[data-heatmap-slot]');
+    if (button && !button.disabled) changeHeatmapColor({target:button});
+  });
+  document.addEventListener('click',event=>{
+    document.querySelectorAll('.heatmap-color-picker[open]').forEach(picker=>{
+      if (!picker.contains(event.target)) picker.open = false;
+    });
+  });
+  document.querySelector('#application-visual').addEventListener('keydown',event=>{
+    if (event.key !== 'Escape') return;
+    const picker = event.target.closest('.heatmap-color-picker');
+    if (picker) { picker.open = false; picker.querySelector('summary').focus(); }
+  });
   function applyPreview(source) {
     applicationSource = source;
     renderApplication();

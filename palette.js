@@ -229,7 +229,58 @@ function renderWheel(palette, roles, escapeText) {
   return `<figure class="color-wheel"><figcaption>色盘位置 <span>编号对应上方色卡</span></figcaption><div class="wheel-plot"><svg viewBox="0 0 240 240" role="img" aria-label="仅展示方案颜色的色相与彩度位置，背景透明，实心点为实际位置，连线通向外围编号"><circle cx="120" cy="120" r="80" fill="none" stroke="#b8bdb5"/><circle cx="120" cy="120" r="40" fill="none" stroke="#cdd1c9" stroke-dasharray="2 3"/><path d="M 40 120 H 200 M 120 40 V 200" fill="none" stroke="#d9ddd5" stroke-width=".6"/>${lines}${dots}</svg>${labels}</div></figure>`;
 }
 
-function applicationMarkup(palette, mode, escapeText) {
+// 使用感知色差选择热图默认配色。
+function defaultHeatmapIndices(palette, count = 3) {
+  const colors = palette.map(describeColor);
+  const size = Math.min(count, colors.length);
+  let best = [], bestMin = -1, bestSum = -1;
+  // 穷举组合，优先最大化最小两两色差，再以总色差打破平局。
+  function visit(indices, start) {
+    if (indices.length === size) {
+      const distances = indices.flatMap((a,i)=>indices.slice(i+1).map(b=>distance(colors[a],colors[b])));
+      const minimum = distances.length ? Math.min(...distances) : 0;
+      const sum = distances.reduce((a,b)=>a+b,0);
+      if (minimum > bestMin || (minimum === bestMin && sum > bestSum)) {
+        best = indices.slice(); bestMin = minimum; bestSum = sum;
+      }
+      return;
+    }
+    for (let i = start; i <= colors.length-(size-indices.length); i++) visit([...indices,i],i+1);
+  }
+  visit([],0);
+  return best.sort((a,b)=>colors[a].L-colors[b].L || a-b);
+}
+
+// 按等距颜色节点进行 RGB 分段线性插值，喵~
+function sampleCmap(colors, value) {
+  const position = Math.max(0, Math.min(1, value)) * (colors.length-1);
+  const index = Math.min(Math.floor(position), colors.length-2);
+  const fraction = position-index;
+  return '#' + [1,3,5].map(offset => {
+    const low = parseInt(colors[index].slice(offset,offset+2),16);
+    const high = parseInt(colors[index+1].slice(offset,offset+2),16);
+    return Math.round(low+(high-low)*fraction).toString(16).padStart(2,'0');
+  }).join('');
+}
+
+function heatmapMarkup(palette, indices, escapeText, categories) {
+  if (palette.length < 2) return '<div class="application-chart"><h4>热图</h4><p class="application-empty">请向当前方案添加至少 2 种颜色，以生成渐变热图。</p></div>';
+  const colors = indices.map(i=>palette[i].hex);
+  const labels = indices.length === 3 ? ['低值颜色','中间颜色','高值颜色'] : ['低值颜色','高值颜色'];
+  const controls = indices.map((selected,slot)=>`<div class="heatmap-color-field"><span>${labels[slot]}</span><details class="heatmap-color-picker" data-heatmap-picker="${slot}"><summary aria-label="${labels[slot]}：${escapeText(palette[selected].name)}"><i aria-hidden="true" style="background:${palette[selected].hex}"></i><span>${escapeText(palette[selected].name)}</span></summary><div class="heatmap-color-options" role="group" aria-label="${labels[slot]}">${palette.map((c,i)=>`<button type="button" data-heatmap-slot="${slot}" value="${i}" aria-pressed="${i === selected}"${indices.includes(i) && i !== selected ? ' disabled' : ''}><i aria-hidden="true" style="background:${c.hex}"></i><span>${escapeText(c.name)}</span></button>`).join('')}</div></details></div>`).join('');
+  // 固定示例数据，让切换方案时可以直接比较配色效果。
+  const values = [[12,28,45,68,82,100],[5,18,39,56,73,91],[22,42,61,79,96,65],[35,58,84,100,71,48],[0,16,33,52,69,87],[48,36,62,75,89,94],[65,72,58,83,91,100],[18,45,78,92,64,38],[32,51,46,69,85,97],[25,40,59,74,88,95]].slice(0,categories.length);
+  const rows = categories;
+  // 固定绘图区高度，按品类数量均分每行空间。
+  const plotHeight = 150;
+  const rowHeight = plotHeight / rows.length;
+
+  const cells = values.map((row,y)=>`<text data-heatmap-row-label="${y}" x="20" y="${36+(y+0.5)*rowHeight}" dominant-baseline="middle" text-anchor="middle" fill="#62685f" font-size="11">${rows[y]}</text>`+row.map((value,x)=>`<rect data-heatmap-row="${y}" x="${38+x*37}" y="${36+y*rowHeight}" width="37" height="${rowHeight}" fill="${sampleCmap(colors,value/100)}" stroke="#fff" stroke-width="1"><title>${rows[y]} · ${x+1}月：${value}</title></rect>`).join('')).join('');
+  const stops = colors.map((color,i)=>`<stop offset="${100*i/(colors.length-1)}%" stop-color="${color}"/>`).join('');
+  return `<div class="application-chart"><h4>品类月度表现热图 · 示例数据</h4><div class="heatmap-controls"><label>色数<select data-heatmap-count aria-label="渐变颜色数量"><option value="2"${indices.length === 2 ? ' selected' : ''}>2 色</option><option value="3"${indices.length === 3 ? ' selected' : ''}${palette.length < 3 ? ' disabled' : ''}>3 色</option></select></label>${controls}</div><svg data-heatmap-rows="${rows.length}" viewBox="0 0 320 ${plotHeight+36}" role="img" aria-label="${rows.length}个品类在六个月的表现热图，数值范围为 0 到 100"><defs><linearGradient id="heatmap-gradient" x1="0" y1="1" x2="0" y2="0" color-interpolation="sRGB">${stops}</linearGradient></defs>${values[0].map((_,i)=>`<text x="${56.5+i*37}" y="22" text-anchor="middle" fill="#62685f" font-size="11">${i+1}月</text>`).join('')}${cells}<rect x="273" y="36" width="12" height="${plotHeight}" fill="url(#heatmap-gradient)"/><g fill="#62685f" font-size="11" dominant-baseline="middle"><text x="290" y="${36+plotHeight}" dominant-baseline="auto">0</text><text x="290" y="${36+plotHeight/2}">50</text><text x="290" y="36">100</text></g></svg></div>`;
+}
+
+function applicationMarkup(palette, mode, escapeText, heatmapIndices = defaultHeatmapIndices(palette)) {
   if (!palette.length) return '<p class="application-empty">先在自定义配色中添加颜色，再来看看效果。</p>';
   const swatches = palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${i+1} · ${escapeText(c.name)}</span>`).join('');
   if (mode === 'art') {
@@ -242,8 +293,6 @@ function applicationMarkup(palette, mode, escapeText) {
   }
   const values = [72,55,86,40,68,49,92,61,35,78].slice(0,palette.length);
   const categories = ['书籍','文具','家居','服饰','食品','运动','数码','园艺','玩具','手作'].slice(0,palette.length);
-  const height = 30 + palette.length*28;
-  const bars = palette.map((c,i)=>`<text x="0" y="${25+i*28}" fill="#62685f" font-size="11">${categories[i]}</text><rect x="40" y="${14+i*28}" width="${values[i]*2.5}" height="16" rx="2" fill="${c.hex}" stroke="#000" stroke-opacity=".15" stroke-width=".5"><title>${categories[i]}：${values[i]} · ${escapeText(c.name)}</title></rect><text x="${47+values[i]*2.5}" y="${26+i*28}" fill="#292d29" font-size="11">${values[i]}</text>`).join('');
   const total = values.reduce((a,b)=>a+b,0);
   const circumference = 2*Math.PI*59;
   let offset = 0;
@@ -253,7 +302,7 @@ function applicationMarkup(palette, mode, escapeText) {
     offset += length;
     return segment;
   }).join('');
-  return `<div class="application-chart"><h4>品类表现 · 示例数据</h4><svg viewBox="0 0 320 ${height}" role="img" aria-label="各品类示例数据柱状图">${bars}</svg></div><div class="application-chart"><h4>品类占比</h4><div class="application-donut"><svg viewBox="0 0 180 180" role="img" aria-label="各品类示例数据占比环形图">${segments}<text x="90" y="88" text-anchor="middle" fill="#292d29" font-size="22">${total}</text><text x="90" y="108" text-anchor="middle" fill="#73776f" font-size="11">合计</text></svg></div></div><div class="application-legend">${palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${categories[i]}</span>`).join('')}</div>`;
+  return `<div class="application-chart"><h4>品类占比 · 示例数据</h4><div class="application-donut-layout"><div class="application-donut"><svg viewBox="0 0 180 180" role="img" aria-label="各品类示例数据占比环形图">${segments}<text x="90" y="88" text-anchor="middle" fill="#292d29" font-size="22">${total}</text><text x="90" y="108" text-anchor="middle" fill="#73776f" font-size="11">合计</text></svg></div><div class="application-legend${palette.length > 5 ? ' is-two-columns' : ''}">${palette.map((c,i)=>`<span title="${escapeText(c.name)} ${c.hex.toUpperCase()}"><i style="background:${c.hex}"></i>${categories[i]}</span>`).join('')}</div></div></div>${heatmapMarkup(palette,heatmapIndices,escapeText,categories)}`;
 }
 
 function addCustomColor(colors, color) {
@@ -271,6 +320,28 @@ if (typeof document !== 'undefined') {
   let customColors = [];
   let applicationMode = 'chart';
   let applicationSource = 0;
+  let heatmapIndices = [0,1];
+  let heatmapCount = 3;
+  let heatmapPaletteKey = '';
+  // 按实际可用高度重排纵坐标，保持横向尺寸和文字比例不变。
+  const heatmapResizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(entries=>{
+    for (const {target:svg,contentRect} of entries) {
+      if (!contentRect.width || !contentRect.height) continue;
+      const height = 320*contentRect.height/contentRect.width;
+      const plotHeight = Math.max(1,height-36);
+      const rowHeight = plotHeight/Number(svg.dataset.heatmapRows);
+      svg.setAttribute('viewBox',`0 0 320 ${height}`);
+      svg.querySelectorAll('[data-heatmap-row]').forEach(cell=>{
+        cell.setAttribute('y',36+Number(cell.dataset.heatmapRow)*rowHeight);
+        cell.setAttribute('height',rowHeight);
+      });
+      svg.querySelectorAll('[data-heatmap-row-label]').forEach(label=>{
+        label.setAttribute('y',36+(Number(label.dataset.heatmapRowLabel)+0.5)*rowHeight);
+      });
+      svg.querySelector('rect[fill="url(#heatmap-gradient)"]').setAttribute('height',plotHeight);
+      svg.querySelectorAll('g text').forEach((label,i)=>label.setAttribute('y',36+plotHeight*(1-i/2)));
+    }
+  });
   let generatedPalettes = [];
   const customMenu = document.querySelector('#custom-context-menu');
   const removeCustomButton = document.querySelector('#remove-custom-color');
@@ -519,14 +590,64 @@ if (typeof document !== 'undefined') {
   function renderApplication() {
     const custom = applicationSource === 'custom';
     const palette = custom ? customColors : (generatedPalettes[applicationSource] || []);
+    const paletteKey = JSON.stringify([applicationSource,palette.map(c=>c.hex)]);
+    if (paletteKey !== heatmapPaletteKey) {
+      heatmapIndices = defaultHeatmapIndices(palette,heatmapCount);
+      heatmapPaletteKey = paletteKey;
+    }
     const name = custom ? '自定义配色' : visibleStyles[applicationSource].name;
+    const primary = palette[0] || describeColor({hex:'#29382e'});
+    const surface = palette.length ? previewSurface(primary,catalog,custom ? 0 : variant) : {background:{hex:'#f7f5f0'},foreground:{hex:'#292d29'}};
+    const usePaletteSurface = !custom && !visibleStyles[applicationSource].algorithm;
+    const controls = document.querySelector('#application-controls');
+    controls.style.background = (usePaletteSurface && palette[3] || surface.background).hex;
+    controls.style.color = (usePaletteSurface && palette[4] || surface.foreground).hex;
+    controls.style.setProperty('--application-primary',primary.hex);
+    controls.style.setProperty('--application-primary-ink',inkFor(primary));
     document.querySelector('#application-source').textContent = `当前配色：${name} · ${palette.length} 色`;
-    document.querySelector('#application-visual').innerHTML = applicationMarkup(palette,applicationMode,escapeText);
+    heatmapResizeObserver?.disconnect();
+    document.querySelector('#application-visual').innerHTML = applicationMarkup(palette,applicationMode,escapeText,heatmapIndices);
+    const heatmap = document.querySelector('#application-visual').querySelector('[data-heatmap-rows]');
+    if (heatmap) heatmapResizeObserver?.observe(heatmap);
     document.querySelector('#application-chart-tab').setAttribute('aria-pressed',String(applicationMode === 'chart'));
     document.querySelector('#application-art-tab').setAttribute('aria-pressed',String(applicationMode === 'art'));
     document.querySelector('#custom-preview-cta').setAttribute('aria-pressed',String(custom));
     document.querySelectorAll('[data-preview-scheme]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.previewScheme) === applicationSource)));
   }
+  function changeHeatmapColor(event) {
+    const target = event.target;
+    if ('heatmapCount' in target.dataset) {
+      const count = Number(target.value);
+      const palette = applicationSource === 'custom' ? customColors : generatedPalettes[applicationSource];
+      if (![2,3].includes(count) || palette.length < count) return;
+      heatmapCount = count;
+      heatmapIndices = defaultHeatmapIndices(palette,count);
+    } else if ('heatmapSlot' in target.dataset) {
+      const slot = Number(target.dataset.heatmapSlot);
+      const index = Number(target.value);
+      const palette = applicationSource === 'custom' ? customColors : generatedPalettes[applicationSource];
+      if (!Number.isInteger(slot) || slot < 0 || slot >= heatmapIndices.length || !Number.isInteger(index) || index < 0 || index >= palette.length || (heatmapIndices.includes(index) && heatmapIndices[slot] !== index)) return;
+      heatmapIndices[slot] = index;
+    } else return;
+    renderApplication();
+    const selector = 'heatmapCount' in target.dataset ? '[data-heatmap-count]' : `[data-heatmap-picker="${target.dataset.heatmapSlot}"] summary`;
+    document.querySelector('#application-visual').querySelector(selector)?.focus();
+  }
+  document.querySelector('#application-visual').addEventListener('change',changeHeatmapColor);
+  document.querySelector('#application-visual').addEventListener('click',event=>{
+    const button = event.target.closest('[data-heatmap-slot]');
+    if (button && !button.disabled) changeHeatmapColor({target:button});
+  });
+  document.addEventListener('click',event=>{
+    document.querySelectorAll('.heatmap-color-picker[open]').forEach(picker=>{
+      if (!picker.contains(event.target)) picker.open = false;
+    });
+  });
+  document.querySelector('#application-visual').addEventListener('keydown',event=>{
+    if (event.key !== 'Escape') return;
+    const picker = event.target.closest('.heatmap-color-picker');
+    if (picker) { picker.open = false; picker.querySelector('summary').focus(); }
+  });
   function applyPreview(source) {
     applicationSource = source;
     renderApplication();
