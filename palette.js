@@ -314,7 +314,7 @@ function addCustomColor(colors, color) {
 if (typeof document !== 'undefined') {
   const catalog = JSON.parse(document.querySelector('#color-data').textContent).map(describeColor);
   const escapeText = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
-  let selected = 0;
+  let selected = Math.floor(Math.random()*catalog.length);
   let variant = 0;
   let colorCount = 5;
   let customColors = [];
