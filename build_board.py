@@ -35,6 +35,7 @@ def main():
 <meta name="description" content="浏览中国传统色彩，查找中文色名与 HEX 色值。">
 <title>中国传统色 · 色彩展示板</title>
 <style>
+.aigc-options{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.aigc-options label{min-width:0}
 :root{color-scheme:light;--paper:#f7f5f0;--ink:#292d29;--muted:#73776f;--line:#dedfd5}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
 main{max-width:1480px;margin:auto;padding:36px 48px 60px}.masthead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:22px;font-size:13px;letter-spacing:2px}.brand{display:flex;align-items:center;gap:12px}.seal{background:#994538;color:#fff;padding:8px 9px;font-family:serif;letter-spacing:0}.edition{color:var(--muted);letter-spacing:1px}
@@ -93,7 +94,7 @@ button.preview-cta{border:0;cursor:pointer;font-family:inherit;line-height:18px}
   #application-card .application-controls{contain:size;min-height:0}
   #application-card .application-content{contain:size;min-height:0;align-self:stretch;display:flex;flex-direction:column;overflow:auto}
   #application-card .application-content> :not(.application-visual){flex-shrink:0}
-  #application-card .application-visual{flex:1;min-height:0;display:flex;flex-direction:column}
+  #application-card .application-visual:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
   #application-card .application-chart,#application-card .application-legend{flex-shrink:0}
   #application-card .application-chart:last-child{flex:1;display:flex;flex-direction:column;min-height:240px}
   #application-card .application-chart:last-child> :not(svg){flex-shrink:0}
@@ -103,7 +104,7 @@ button.preview-cta{border:0;cursor:pointer;font-family:inherit;line-height:18px}
   #application-card .application-art svg{flex:1;min-height:120px;height:0;object-fit:contain}
   #application-card .application-art figcaption{flex-shrink:0}
 }
-</style>
+.aigc-panel[hidden]{display:none}.aigc-panel label{display:block;margin:12px 0;font-size:13px}.aigc-panel input,.aigc-panel textarea,.aigc-panel select{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:4px;padding:10px;font:inherit;background:white;color:var(--ink)}.aigc-panel textarea{min-height:100px;resize:vertical}.aigc-panel :focus-visible{outline:2px solid #526954;outline-offset:2px}.aigc-panel button,.aigc-panel a{display:inline-block;margin:4px 6px 4px 0;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--ink);font:inherit;font-size:13px;cursor:pointer}.aigc-panel button:disabled{opacity:.5;cursor:default}.aigc-panel img{width:100%;height:auto;border-radius:4px}.aigc-panel p{font-size:12px;line-height:1.8;overflow-wrap:anywhere}.aigc-panel a[hidden],.aigc-panel img[hidden]{display:none}</style>
 </head>
 <body>
 <main>
@@ -115,7 +116,18 @@ button.preview-cta{border:0;cursor:pointer;font-family:inherit;line-height:18px}
 <div id="generated-schemes"></div>
 <article class="scheme" id="custom-scheme" aria-labelledby="custom-title"><div class="scheme-title"><h3 id="custom-title">自定义配色</h3><button type="button" class="copy-palette" id="copy-custom" disabled>复制整组</button></div>
 <div class="preview" id="custom-preview" style="background:#f7f5f0;color:#292d29"><span class="preview-badge" id="custom-preview-badge">我的星河</span><h4>把喜欢的颜色，组成一段奇缘。</h4><p id="custom-preview-count">共 0 色 · 按添加顺序展示</p><div class="custom-search-row"><button type="button" class="preview-cta" id="custom-preview-cta" aria-pressed="false" aria-controls="application-card" disabled>探索色彩 →</button><input id="custom-search" type="search" placeholder="搜索名称、拼音或 HEX" aria-label="搜索并添加颜色" autocomplete="off" aria-controls="custom-results" aria-expanded="false"><button type="button" id="clear-custom" disabled>清空</button><div class="custom-results" id="custom-results" hidden></div></div><p class="custom-help" id="custom-status" role="status">尚未添加颜色。</p></div><div id="custom-content"></div></article>
-<article class="scheme" id="application-card" aria-labelledby="application-title"><div class="scheme-title"><h3 id="application-title">应用预览</h3></div><div class="application-controls" id="application-controls"><div class="application-tabs" role="group" aria-label="应用预览类型"><button type="button" id="application-chart-tab" aria-pressed="true" aria-controls="application-visual">数据图表</button><button type="button" id="application-art-tab" aria-pressed="false" aria-controls="application-visual">绘画艺术</button></div><p class="application-source" id="application-source" role="status"></p><p class="application-hint">点击任一配色卡的“探索色彩”，看看它在作品中的样子。</p></div><div class="application-content"><div class="application-visual" id="application-visual"></div></div></article>
+<article class="scheme" id="application-card" aria-labelledby="application-title"><div class="scheme-title"><h3 id="application-title">应用预览</h3></div><div class="application-controls" id="application-controls"><div class="application-tabs" role="group" aria-label="应用预览类型"><button type="button" id="application-chart-tab" aria-pressed="true" aria-controls="application-visual">数据图表</button><button type="button" id="application-art-tab" aria-pressed="false" aria-controls="application-visual">SVG插画</button><button type="button" id="application-aigc-tab" aria-pressed="false" aria-controls="aigc-panel">AIGC</button></div><p class="application-source" id="application-source" role="status"></p><p class="application-hint">点击任一配色卡的“探索色彩”，看看它在作品中的样子。</p></div><div class="application-content"><div class="application-visual" id="application-visual"></div><section class="aigc-panel" id="aigc-panel" aria-label="AIGC 画作生成" hidden>
+<p>使用当前配色与补充提示词生成画作。需自备 OpenAI 密钥和网络环境。</p>
+<form id="aigc-form">
+<label>接口密钥<input id="aigc-key" type="password" autocomplete="off" spellcheck="false" placeholder="填写 OpenAI 密钥，仅直连、不保存" title="密钥仅用于直接请求 OpenAI，不写入文件或浏览器存储。请仅在可信设备上使用。" required></label>
+<label>补充提示词<textarea id="aigc-prompt" maxlength="8000" placeholder="例如：水墨山水，远山与湖面，留白，无文字"></textarea></label>
+<div class="aigc-options">
+<label>图像模型<select id="aigc-model"><option value="gpt-image-1">GPT Image 1</option><option value="gpt-image-1.5">GPT Image 1.5</option></select></label>
+<label>画幅<select id="aigc-size"><option value="1024x1024">方形</option><option value="1536x1024">横幅</option><option value="1024x1536">竖幅</option></select></label>
+</div>
+<button id="aigc-generate" type="submit">生成画作</button><button id="aigc-cancel" type="button" disabled>停止等待</button><button id="aigc-clear-key" type="button">清除密钥</button>
+</form><p id="aigc-status" role="status" aria-live="polite">等待生成。</p><img id="aigc-image" alt="生成的配色画作" hidden><p id="aigc-caption"></p><a id="aigc-download" download="配色画作.png" hidden>下载画作</a>
+</section></div></article>
 </div>
 </section>
 <div class="toolbar"><div class="searchbox"><label for="search">查找颜色</label><input id="search" type="search" placeholder="输入中文名、拼音或 HEX" autocomplete="off"></div><span class="count" id="count" role="status">共 __TOTAL__ 种颜色</span></div>

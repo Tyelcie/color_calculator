@@ -481,7 +481,7 @@ if (typeof document !== 'undefined') {
     document.querySelector('#custom-preview-cta').disabled = count === 0;
     const copy = document.querySelector('#copy-custom');
     copy.disabled = count === 0;
-    if (count) copy.dataset.hex = customColors.map((c,i)=>`${i+1}：${c.name} ${c.hex.toUpperCase()}`).join('；');
+    if (count) copy.dataset.hex = customColors.map(c=>`${c.name}:${c.hex.toUpperCase()}`).join('；');
     else delete copy.dataset.hex;
     document.querySelector('#clear-custom').disabled = count === 0;
     document.querySelector('#custom-status').textContent = message || `已添加 ${count} / 10 色。`;
@@ -605,6 +605,9 @@ if (typeof document !== 'undefined') {
     controls.style.setProperty('--application-primary',primary.hex);
     controls.style.setProperty('--application-primary-ink',inkFor(primary));
     document.querySelector('#application-source').textContent = `当前配色：${name} · ${palette.length} 色`;
+    document.querySelector('#aigc-panel').hidden = applicationMode !== 'aigc';
+    document.querySelector('#application-visual').hidden = applicationMode === 'aigc';
+    document.querySelector('#application-aigc-tab').setAttribute('aria-pressed',String(applicationMode === 'aigc'));
     heatmapResizeObserver?.disconnect();
     document.querySelector('#application-visual').innerHTML = applicationMarkup(palette,applicationMode,escapeText,heatmapIndices);
     const heatmap = document.querySelector('#application-visual').querySelector('[data-heatmap-rows]');
@@ -660,6 +663,60 @@ if (typeof document !== 'undefined') {
   document.querySelector('#custom-preview-cta').addEventListener('click',()=>{ if(customColors.length) applyPreview('custom'); });
   document.querySelector('#application-chart-tab').addEventListener('click',()=>{ applicationMode='chart'; renderApplication(); });
   document.querySelector('#application-art-tab').addEventListener('click',()=>{ applicationMode='art'; renderApplication(); });
+  document.querySelector('#application-aigc-tab').addEventListener('click',()=>{ applicationMode='aigc'; renderApplication(); });
+  let imageController = null;
+  const imageField = id => document.querySelector('#aigc-' + id);
+  imageField('clear-key').addEventListener('click',()=>{ imageField('key').value = ''; });
+  imageField('cancel').addEventListener('click',()=>{ imageController?.abort(); });
+  imageField('form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    if (imageController) return;
+    const key = imageField('key').value.trim();
+    const palette = applicationSource === 'custom' ? customColors : (generatedPalettes[applicationSource] || []);
+    const status = imageField('status');
+    if (!key) { status.textContent = '请先填写接口密钥。'; return; }
+    if (!palette.length) { status.textContent = '请先选择至少一种颜色。'; return; }
+    const colors = palette.map(c=>`${c.name}（${c.hex.toUpperCase()}）`).join('、');
+    const prompt = `创作一幅完整的艺术画作，以以下中国传统配色为主要色彩参考：${colors}。保持色彩协调。\n补充要求：${imageField('prompt').value.trim() || '水墨山水，远山与湖面，留白，无文字'}`;
+    const controller = new AbortController();
+    imageController = controller;
+    let timedOut = false;
+    const timer = setTimeout(()=>{ timedOut = true; controller.abort(); },240000);
+    imageField('generate').disabled = true;
+    imageField('cancel').disabled = false;
+    status.textContent = '正在生成，可能需要几分钟；请勿重复提交。';
+    try {
+      const response = await fetch('https://api.openai.com/v1/images/generations',{
+        method:'POST', credentials:'omit', redirect:'error', signal:controller.signal,
+        headers:{'Content-Type':'application/json',Authorization:`Bearer ${key}`},
+        body:JSON.stringify({model:imageField('model').value,prompt,n:1,size:imageField('size').value,quality:'medium',output_format:'png'})
+      });
+      if (!response.ok) {
+        const reasons = {400:'请求参数或提示词未被接受。',401:'密钥无效，请重新填写。',403:'账号无权使用该图像模型，请检查模型权限或验证状态。',429:'额度不足或请求过于频繁，请检查账户后再试。'};
+        throw new Error(`生成失败（${response.status}）：${reasons[response.status] || '服务暂时不可用，请稍后重试。'}`);
+      }
+      const result = await response.json();
+      const encoded = result.data?.[0]?.b64_json;
+      if (typeof encoded !== 'string' || !encoded || !/^[A-Za-z0-9+/=\r\n]+$/.test(encoded)) throw new Error('服务未返回有效的图片数据。');
+      const url = 'data:image/png;base64,' + encoded;
+      imageField('image').src = url;
+      imageField('image').hidden = false;
+      imageField('download').href = url;
+      imageField('download').hidden = false;
+      imageField('caption').textContent = `本幅画作使用的配色：${colors}。切换配色后需重新生成。`;
+      status.textContent = '画作已生成，请下载保存；刷新页面会清除本次结果。';
+    } catch (error) {
+      status.textContent = controller.signal.aborted
+        ? (timedOut ? '等待超时。' : '已停止等待。') + '服务端可能仍在生成并计费，请勿立即重复提交。'
+        : error instanceof TypeError ? '无法连接图像服务：请检查网络。也可能是浏览器跨域限制，独立 HTML 无法绕过该限制。'
+        : error instanceof SyntaxError ? '服务返回的数据无法解析，请稍后重试。' : error.message;
+    } finally {
+      clearTimeout(timer);
+      imageController = null;
+      imageField('generate').disabled = false;
+      imageField('cancel').disabled = true;
+    }
+  });
   function render() {
     const base = catalog[selected];
     document.querySelector('#selected-color').textContent = `当前主色：${base.name} · ${base.hex.toUpperCase()}。已生成 ${visibleStyles.length} 套配色，每套 ${colorCount} 色。`;
@@ -678,7 +735,7 @@ if (typeof document !== 'undefined') {
       const surface = previewSurface(primary,catalog,variant);
       const background = (!style.algorithm && palette[3]) || surface.background;
       const foreground = (!style.algorithm && palette[4]) || surface.foreground;
-      const copy = palette.map((c, i) => `${roles[i]}：${c.name} ${c.hex.toUpperCase()}`).join('；');
+      const copy = palette.map(c => `${c.name}:${c.hex.toUpperCase()}`).join('；');
       const algorithmNote = style.algorithm === 'cluster' ? '聚类从整个色库提取代表色；换组使用不同初始化。'
         : style.algorithm === 'equal-hue' ? `目标间隔 ${Number((360/colorCount).toFixed(1))}°，实际颜色受色库限制可能偏移；换组调整明度，保持目标方向。${base.C < 0.025 ? '主色接近中性色，以 0° 为参考起点。' : ''}`
         : '贪心最大化最小色差，侧重区分度；固定主色与数量时换组结果不变。';

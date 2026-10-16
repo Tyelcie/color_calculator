@@ -187,3 +187,55 @@ for(let count=1;count<=10;count++) {
   assert.ok(!chart.includes('NaN') && !art.includes('undefined'),'任意配色数量都应生成有效预览');
 }
 console.log('检查通过：自定义配色交互、应用预览方案切换、图表与艺术视图切换，以及 1～10 色绘制。');
+
+// 模拟图像接口，避免测试消耗真实额度或使用真实密钥。
+async function testAigc() {
+  click('#generated-schemes',action('previewScheme',0));
+  click('#application-aigc-tab');
+  assert.equal(get('#aigc-panel').hidden,false,'应显示生成表单');
+  assert.equal(get('#application-visual').hidden,true,'生成时应隐藏其他预览');
+  const submit = () => get('#aigc-form').events.submit[0]({preventDefault(){}});
+  await submit();
+  assert.ok(get('#aigc-status').textContent.includes('密钥'),'空密钥应阻止请求');
+  get('#aigc-key').value = '测试密钥';
+  get('#aigc-prompt').value = '水墨山水';
+  get('#aigc-model').value = 'gpt-image-1';
+  get('#aigc-size').value = '1024x1024';
+  const originalFetch = global.fetch;
+  let request;
+  try {
+    global.fetch = async (url,options) => {
+      request = {url,options};
+      return {ok:true,json:async()=>({data:[{b64_json:'aGVsbG8='}]})};
+    };
+    await submit();
+    assert.equal(request.url,'https://api.openai.com/v1/images/generations','密钥只能发往官方接口');
+    const body = JSON.parse(request.options.body);
+    assert.ok(body.prompt.includes('水墨山水') && body.prompt.includes('（#'),'请求应包含配色和补充提示词');
+    assert.ok(!request.options.body.includes('测试密钥'),'密钥不能进入提示词');
+    assert.equal(get('#aigc-download').href,get('#aigc-image').src,'下载应使用本地图片数据');
+    click('#application-chart-tab');
+    click('#application-aigc-tab');
+    assert.equal(get('#aigc-prompt').value,'水墨山水','切换页签应保留输入');
+    global.fetch = async()=>({ok:false,status:401});
+    await submit();
+    assert.ok(get('#aigc-status').textContent.includes('密钥无效'),'应解释认证错误');
+    global.fetch = async()=>{ throw new TypeError('模拟网络故障'); };
+    await submit();
+    assert.ok(get('#aigc-status').textContent.includes('跨域'),'网络错误应提示跨域可能性');
+    global.fetch = (_,options)=>new Promise((resolve,reject)=>{
+      options.signal.addEventListener('abort',()=>reject(new Error('已取消')));
+    });
+    const waiting = submit();
+    assert.equal(get('#aigc-generate').disabled,true,'等待中不能重复生成');
+    click('#aigc-cancel');
+    await waiting;
+    assert.ok(get('#aigc-status').textContent.includes('已停止等待'),'应支持中止等待');
+    assert.equal(get('#aigc-generate').disabled,false,'中止后应恢复按钮');
+    click('#aigc-clear-key');
+    assert.equal(get('#aigc-key').value,'','应能清除密钥');
+    assert.ok(html.includes(source),'独立页面必须内联最新脚本');
+    console.log('检查通过：画作生成请求、输入保留、下载、错误处理、中止和密钥清除。');
+  } finally { global.fetch = originalFetch; }
+}
+testAigc().catch(error=>{ console.error(error); process.exitCode=1; });
